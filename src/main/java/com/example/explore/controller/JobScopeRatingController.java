@@ -3,6 +3,8 @@ package com.example.explore.controller;
 import java.util.AbstractMap;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +25,18 @@ import com.example.explore.domain.JobScopeRating;
 import com.example.explore.dto.RatingDTO;
 import com.example.explore.service.JobScopeRatingService;
 
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiOperation;
+//import io.swagger.annotations.ApiParam;
+//import io.swagger.annotations.ApiResponse;
+//import io.swagger.annotations.ApiResponses;
+
+//@Api(description = "API for Job Scope Ratings")
 @RestController
 @RequestMapping(path = "/jobs/{jobId}/ratings")
 public class JobScopeRatingController {
 
+	private final static Logger logger = LoggerFactory.getLogger(JobScopeRatingController.class);
 	private final JobScopeRatingService jobRatingService;
 
 	public JobScopeRatingController(JobScopeRatingService jobRatingService) {
@@ -36,28 +46,40 @@ public class JobScopeRatingController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
+//	@ApiOperation(value = "Create New Rating")
+//	@ApiResponses(value = { @ApiResponse(code = 201, message = "Created") })
 	public void createJobRating(@PathVariable(value = "jobId") int jobId, @RequestBody @Validated RatingDTO ratingDto) {
+		logger.info("POST /jobs/{}/ratings", jobId);
 		jobRatingService.createNew(jobId, ratingDto.getClientId(), ratingDto.getScore(), ratingDto.getComment());
 
 	}
 
 	@GetMapping
-	public Page<RatingDTO> getAllRatingsForJobByPage(@PathVariable(value = "jobId") int jobId, Pageable pg) {
+//	@ApiOperation(value = "Find all ratings")
+//	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"),
+//			@ApiResponse(code = 404, message = "Ratings not found for job id") })
+	public Page<RatingDTO> getAllRatingsForJob(
+			 @PathVariable(value = "jobId") int jobId, Pageable pg) {
+		logger.info("GET /jobs/{}/ratings", jobId);
 		Page<JobScopeRating> ratings = jobRatingService.lookupRatings(jobId, pg);
 		return new PageImpl<>(ratings.get().map(RatingDTO::new).collect(Collectors.toList()), pg,
 				ratings.getTotalElements());
 	}
 
 	@GetMapping(path = "/average")
+//	@ApiOperation(value = "Get average of ratings for specific job")
 	public AbstractMap.SimpleEntry<String, Double> getAverage(@PathVariable(value = "jobId") int jobId) {
+		logger.info("GET /jobs/{}/ratings/average", jobId);
 		return new AbstractMap.SimpleEntry<String, Double>("average", jobRatingService.getAverageScore(jobId));
 	}
 
 	// This updates every field in the rating object while patch updates specified
 	// fields
 	@PutMapping
+//	@ApiOperation(value = "Update job rating")
 	public RatingDTO updateWithPut(@PathVariable(value = "jobId") int jobId,
 			@RequestBody @Validated RatingDTO ratingDto) {
+		logger.info("PUT /jobs/{}/ratings", jobId);
 		return new RatingDTO(
 				jobRatingService.update(jobId, ratingDto.getClientId(), ratingDto.getScore(), ratingDto.getComment()));
 	}
@@ -70,10 +92,12 @@ public class JobScopeRatingController {
 	 * @return The modified Rating DTO.
 	 */
 	@PatchMapping
+//	@ApiOperation(value = "Update specified fields in job rating")
 	public RatingDTO updateWithPatch(@PathVariable(value = "jobId") int jobId,
 			@RequestBody @Validated RatingDTO ratingDto) {
-		return new RatingDTO(
-				jobRatingService.updateSome(jobId, ratingDto.getClientId(), ratingDto.getScore(), ratingDto.getComment()));
+		logger.info("PATCH /jobs/{}/ratings", jobId);
+		return new RatingDTO(jobRatingService.updateSome(jobId, ratingDto.getClientId(), ratingDto.getScore(),
+				ratingDto.getComment()));
 	}
 
 	/**
@@ -83,7 +107,9 @@ public class JobScopeRatingController {
 	 * @param clientId client identifier
 	 */
 	@DeleteMapping(path = "/{clientId}")
+//	@ApiOperation(value = "Delete job rating provided by a client")
 	public void delete(@PathVariable(value = "jobId") int jobId, @PathVariable(value = "clientId") int clientId) {
+		logger.info("DELETE /jobs/{}/ratings/{}", jobId, clientId);
 		jobRatingService.delete(jobId, clientId);
 	}
 
