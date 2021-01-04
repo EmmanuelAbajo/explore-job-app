@@ -10,7 +10,7 @@ import com.example.explore.domain.JobScopeRating;
 public class RatingDTO {
 
 	@Min(0)
-	@Max(10)
+	@Max(5)
 	private Integer score;
 
 	@Size(max = 255)
@@ -18,12 +18,14 @@ public class RatingDTO {
 
 	@NotNull
 	private Integer clientId;
+	
+	public RatingDTO(JobScopeRating rating) {
+        this.score = rating.getScore();
+        this.comment = rating.getComment();
+        this.clientId = rating.getClientId();
+    }
 
-	public RatingDTO(JobScopeRating jobRating) {
-	        this(jobRating.getScore(), jobRating.getComment(), jobRating.getPk().getClientId());
-	    }
-
-	private RatingDTO(Integer score, String comment, Integer clientId) {
+	public RatingDTO(Integer score, String comment, Integer clientId) {
 	        this.score = score;
 	        this.comment = comment;
 	        this.clientId = clientId;

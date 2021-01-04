@@ -9,15 +9,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.example.explore.domain.JobScopeRating;
-import com.example.explore.domain.JobScopeRatingPk;
 
 @RepositoryRestResource(exported = false)
-public interface JobScopeRatingRepository extends CrudRepository<JobScopeRating, JobScopeRatingPk> {
+public interface JobScopeRatingRepository extends CrudRepository<JobScopeRating, Integer> {
 	
-	Optional<JobScopeRating> findByPkJobScopeIdAndPkClientId(Integer jobScopeId, Integer clientId);
+	Optional<JobScopeRating> findByJobScopeIdAndClientId(Integer jobScopeId, Integer clientId);
 	
-	List<JobScopeRating> findByPkJobScopeId(Integer jobScopeId);
+	List<JobScopeRating> findByJobScopeId(Integer jobScopeId);
 	
-	Page<JobScopeRating> findByPkJobScopeId(Integer jobScopeId, Pageable pg);
+	Page<JobScopeRating> findByJobScopeId(Integer jobScopeId, Pageable pg);
 
 }
