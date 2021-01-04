@@ -8,12 +8,12 @@ CREATE TABLE freelancer (
 CREATE TABLE job_scope (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(100) NOT NULL,
-	descritpion VARCHAR(2000) NOT NULL,
+	description VARCHAR(2000) NOT NULL,
 	renumeration INT NOT NULL,
 	freelancer_id BIGINT
 );
 
-ALTER TABLE job_scope ADD FOREIGN_KEY (freelancer_id) REGERENCES freelancer(id);
+ALTER TABLE job_scope ADD FOREIGN KEY (freelancer_id) REFERENCES freelancer(id);
 
 CREATE TABLE job_scope_rating (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -23,5 +23,5 @@ CREATE TABLE job_scope_rating (
     comment VARCHAR(200)
  );
  
- ALTER TABLE job_scope_rating ADD FOREIGN_KEY (job_scope_id) REFERENCES job_scope(id);
+ ALTER TABLE job_scope_rating ADD FOREIGN KEY (job_scope_id) REFERENCES job_scope(id);
  ALTER TABLE job_scope_rating ADD UNIQUE MyConstraint (job_scope_id, client_id);
