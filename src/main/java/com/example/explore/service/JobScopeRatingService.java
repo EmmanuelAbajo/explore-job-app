@@ -91,12 +91,12 @@ public class JobScopeRatingService {
 	 * @return the found JobScopeRating
 	 * @throws NoSuchElementException if no JobScopeRating found
 	 */
-	private JobScopeRating verifyJobScopeRating(int jobId, int clientId) throws NoSuchElementException {
+	public JobScopeRating verifyJobScopeRating(int jobId, int clientId) throws NoSuchElementException {
 		return jobRatingRepo.findByJobScopeIdAndClientId(jobId, clientId).orElseThrow(() -> new NoSuchElementException(
 				"Job Scope Rating pair for request(" + jobId + " for client " + clientId + ")"));
 	}
 
-	private JobScope verifyJobScope(int id) throws NoSuchElementException {
+	public JobScope verifyJobScope(int id) throws NoSuchElementException {
 		return jobRepo.findById(id).orElseThrow(() -> new NoSuchElementException("Job Scope does not exist " + id));
 	}
 
