@@ -33,7 +33,7 @@ public class JobRatingControllerIntegrationTest {
 	
 	@Test
 	public void testGetRatingsWithMockMvc() throws Exception {
-		this.mockMvc.perform(get("/jobs/1/ratings")).andDo(print()).andExpect(status().isOk());
+		this.mockMvc.perform(get("/jobs/1/ratings?page=0&size=5&sort=score,asc")).andDo(print()).andExpect(status().isOk());
 	}
 	
 	@Test
