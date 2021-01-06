@@ -1,0 +1,6 @@
+CREATE TABLE freelancer (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	first_name VARCHAR(50) NOT NULL,
+	last_name VARCHAR(50) NOT NULL,
+	experience_level VARCHAR(20) NOT NULL
+);
