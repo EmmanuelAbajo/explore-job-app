@@ -4,13 +4,15 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpServerErrorException;
 
 import com.example.explore.domain.User;
 import com.example.explore.dto.LoginDTO;
@@ -28,16 +30,18 @@ public class UserController {
 	}
 
 	@PostMapping("/signin")
-	public Authentication login(@RequestBody @Valid LoginDTO loginDto) {
-		return userService.signin(loginDto.getUsername(), loginDto.getPassword());
+	public String login(@RequestBody @Valid LoginDTO loginDto) {
+		return userService.signin(loginDto.getUsername(), loginDto.getPassword())
+				.orElseThrow(() -> new HttpServerErrorException(HttpStatus.FORBIDDEN, "Login failed!"));
 	}
 
 	@PostMapping("/signup")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ResponseStatus(HttpStatus.CREATED)
 	public User signup(@RequestBody @Valid LoginDTO loginDto) {
 		return userService
 				.signup(loginDto.getUsername(), loginDto.getPassword(), loginDto.getFirstName(), loginDto.getLastName())
-				.orElseThrow(() -> new RuntimeException("User already exists"));
+				.orElseThrow(() -> new HttpServerErrorException(HttpStatus.BAD_REQUEST, "User already exists!"));
 	}
 
 	@GetMapping

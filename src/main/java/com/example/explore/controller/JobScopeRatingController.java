@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +48,7 @@ public class JobScopeRatingController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize("hasRole('ROLE_USER')")
 //	@ApiOperation(value = "Create New Rating")
 //	@ApiResponses(value = { @ApiResponse(code = 201, message = "Created") })
 	public void createJobRating(@PathVariable(value = "jobId") int jobId, @RequestBody @Validated RatingDTO ratingDto) {
@@ -54,12 +57,20 @@ public class JobScopeRatingController {
 
 	}
 
+	@PostMapping("/{score}")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	@ResponseStatus(HttpStatus.CREATED)
+	public void createManyTourRatings(@PathVariable(value = "jobId") int jobId,
+			@PathVariable(value = "score") int score, @RequestParam("clients") Integer clients[]) {
+		logger.info("POST /tours/{}/ratings/{}", jobId, score);
+		jobRatingService.rateMany(jobId, score, clients);
+	}
+
 	@GetMapping
 //	@ApiOperation(value = "Find all ratings")
 //	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"),
 //			@ApiResponse(code = 404, message = "Ratings not found for job id") })
-	public Page<RatingDTO> getAllRatingsForJob(
-			 @PathVariable(value = "jobId") int jobId, Pageable pg) {
+	public Page<RatingDTO> getAllRatingsForJob(@PathVariable(value = "jobId") int jobId, Pageable pg) {
 		logger.info("GET /jobs/{}/ratings", jobId);
 		Page<JobScopeRating> ratings = jobRatingService.lookupRatings(jobId, pg);
 		return new PageImpl<>(ratings.get().map(RatingDTO::new).collect(Collectors.toList()), pg,
@@ -73,9 +84,9 @@ public class JobScopeRatingController {
 		return new AbstractMap.SimpleEntry<String, Double>("average", jobRatingService.getAverageScore(jobId));
 	}
 
-	// This updates every field in the rating object while patch updates specified
-	// fields
-	@PutMapping
+	@PutMapping // This updates every field in the rating object while patch updates specified
+				// fields
+	@PreAuthorize("hasRole('ROLE_USER')")
 //	@ApiOperation(value = "Update job rating")
 	public RatingDTO updateWithPut(@PathVariable(value = "jobId") int jobId,
 			@RequestBody @Validated RatingDTO ratingDto) {
@@ -92,6 +103,7 @@ public class JobScopeRatingController {
 	 * @return The modified Rating DTO.
 	 */
 	@PatchMapping
+	@PreAuthorize("hasRole('ROLE_USER')")
 //	@ApiOperation(value = "Update specified fields in job rating")
 	public RatingDTO updateWithPatch(@PathVariable(value = "jobId") int jobId,
 			@RequestBody @Validated RatingDTO ratingDto) {
@@ -107,6 +119,7 @@ public class JobScopeRatingController {
 	 * @param clientId client identifier
 	 */
 	@DeleteMapping(path = "/{clientId}")
+	@PreAuthorize("hasRole('ROLE_USER')")
 //	@ApiOperation(value = "Delete job rating provided by a client")
 	public void delete(@PathVariable(value = "jobId") int jobId, @PathVariable(value = "clientId") int clientId) {
 		logger.info("DELETE /jobs/{}/ratings/{}", jobId, clientId);
