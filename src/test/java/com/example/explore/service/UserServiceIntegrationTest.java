@@ -3,7 +3,7 @@ package com.example.explore.service;
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Optional;
 
@@ -22,8 +22,7 @@ public class UserServiceIntegrationTest {
 	@Test
 	public void signup() {
 		Optional<User> user = service.signup("dummyUsername", "dummypassword", "john", "doe");
-		assertThat(user.get().getPassword()).isNotEqualTo("dummypassword");
-		System.out.println("Encoded Password = " + user.get().getPassword());
+		assertNotEquals("dummypassword",user.get().getPassword());
 	}
 
 }
