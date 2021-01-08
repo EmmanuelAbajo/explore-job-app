@@ -1,0 +1,19 @@
+version: "2"
+services:
+  app:
+    container_name: job-app
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on: 
+      - db
+  db:
+    container_name: explore-jobs-db-container
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: explorejobs 
+      MYSQL_USER: admin 
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: password
